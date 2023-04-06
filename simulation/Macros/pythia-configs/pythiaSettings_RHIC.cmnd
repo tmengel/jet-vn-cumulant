@@ -1,0 +1,14 @@
+Beams:idA =  2212
+Beams:idB = 2212
+Beams:eCM = 200.0
+Tune:pp = 14 
+HardQCD:all = on
+
+Init:showProcesses = off
+Init:showMultipartonInteractions = off
+Init:showChangedSettings = off
+Init:showChangedParticleData = off
+Next:numberCount = 1000000000
+Next:numberShowInfo = 0
+Next:numberShowProcess = 0
+Next:numberShowEvent = 0
