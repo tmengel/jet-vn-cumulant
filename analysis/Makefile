@@ -1,5 +1,5 @@
 # MakeFile
--include ../../Makefile.inc
+-include ../Makefile.inc
 
 # CXX=g++
 # CXX_COMMON=-O2 -std=c++11 -pedantic -W -Wall -Wshadow -fPIC -pthread
