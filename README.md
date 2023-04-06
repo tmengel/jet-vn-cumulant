@@ -17,7 +17,7 @@ The analyis macro takes in the mixed, re-aligned event and finds anti-$k_{T}$ je
 ### Dependencies
 
 * PYTHIA 8.3.X
-* ROOT 6.*X
+* ROOT 6.X
 * FastJet 3.X
 
 ### Build
@@ -35,23 +35,13 @@ The analyis macro takes in the mixed, re-aligned event and finds anti-$k_{T}$ je
   - Roatates pythia event and merges with TennGen background, outputs to <prefix>/200GeV_MixedEvents_ptbin<ptbin of input file>_RealignJets_R<jet param>.root
 * ./MergeAllPtBins <input_dir> <n_pt_bins> <jetparam> <output_file>
   - Merges all pt bins into one file in /simulation/root-files/MixedEvents/<output_file>
-```
-code blocks for commands
-```
+ 
+### Authors
 
-## Help
+Tanner Mengel
+[tmengel@vols.utk.edu]
 
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
-
-## Authors
-
-ex. Tanner Mengel
-ex. [tmengel@vols.utk.edu]
-
-## Version History
+### Version History
 
 * 0.1
     * Creation
