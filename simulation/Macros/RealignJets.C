@@ -29,7 +29,7 @@ const Double_t JetV3 = 0.01;
 const Double_t JetV4 = 0.005;
 const Double_t MAX_DNDPHI = (1.0+2.0*(TMath::Abs(JetV2)+TMath::Abs(JetV3)+TMath::Abs(JetV4)));
 
-const Int_t MAX_PARTICLES = 5000;
+const Int_t MAX_PARTICLES = 10000;
 const Int_t MAX_JETS = 100;
 
 
@@ -196,7 +196,7 @@ Int_t RealignJets(TString input_file_pythia, TString input_file_tenngen, TString
             for(Int_t ipart = 0; ipart < nParts_pythia; ipart++){   
                 PseudoJet particle_temp(pythia_px[ipart], pythia_py[ipart], pythia_pz[ipart], pythia_E[ipart]);
                 if(particle_temp.pt() < 0.15) continue; // remove particles with pt < 0.15 GeV
-                if(TMath::Abs(particle_temp.eta()) > etaRange) continue; // remove particles outside of eta range
+                if(( TMath::Abs(particle_temp.eta())  >  1.1 ) && !(particle_temp.eta() < 4.9 && particle_temp.eta() > 2.0)) continue;
                 if(particle_temp.px() == 0 && particle_temp.py() == 0 && particle_temp.pz() == 0 && particle_temp.E() == 0) continue; // remove particles with 0 momentum
                 
                 particles.push_back(particle_temp);
@@ -220,11 +220,11 @@ Int_t RealignJets(TString input_file_pythia, TString input_file_tenngen, TString
                 // cout << "Jet " << ijet << " has pt " << jets[ijet].pt() << endl;
                 // cout << "Jet " << ijet << " has area " << jets[ijet].area() << endl;
                 // if(!jets[ijet].has_area()) continue; // check if the jet has an area
-              //  cout << "Jet " << ijet << " has area " << jets[ijet].area() << endl;
+                //  cout << "Jet " << ijet << " has area " << jets[ijet].area() << endl;
                 if(jets[ijet].constituents().size() == 0) continue; // check if the jet has constituents
-               // cout << "Jet " << ijet << " has constituents " << jets[ijet].constituents().size() << endl;
+                // cout << "Jet " << ijet << " has constituents " << jets[ijet].constituents().size() << endl;
                 if(jets[ijet].pt() < jet_min_pt_antikt) continue; // check if the jet has pt > 20
-               // cout << "Jet " << ijet << " has pt " << jets[ijet].pt() << endl;
+                // cout << "Jet " << ijet << " has pt " << jets[ijet].pt() << endl;
                 if(TMath::Abs(jets[ijet].eta()) > antikt_jet_abs_eta_max) continue; // check if the jet is in the eta range
                 // fill the jet info
                 pythia_jets_original_phi[event_num_pythia_jets] = jets[ijet].phi();
@@ -291,7 +291,8 @@ Int_t RealignJets(TString input_file_pythia, TString input_file_tenngen, TString
             for(Int_t ipart = 0; ipart < nParts_tenngen; ipart++){
                 PseudoJet particle_temp(tenngen_px[ipart], tenngen_py[ipart], tenngen_pz[ipart], tenngen_E[ipart]);
                 if(particle_temp.pt() < 0.15) continue; // remove particles with pt < 0.15 GeV
-                if(TMath::Abs(particle_temp.eta()) > etaRange) continue; // remove particles outside of eta range
+                if(( TMath::Abs(particle_temp.eta())  >  1.1 ) && !(particle_temp.eta() < 4.9 && particle_temp.eta() > 2.0)) continue;
+                // if(TMath::Abs(particle_temp.eta()) > etaRange) continue; // remove particles outside of eta range
                 if(particle_temp.px() == 0 && particle_temp.py() == 0 && particle_temp.pz() == 0 && particle_temp.E() == 0) continue; // remove particles with 0 momentum
                
                 // fill the particle info

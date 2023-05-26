@@ -10,10 +10,12 @@
 #include "TString.h"
 #include "TTree.h"
 #include "TSystem.h"
+
+
 using namespace std;
 using namespace ROOT;
 
-const Int_t MAXPARTS = 2000;
+const Int_t MAXPARTS = 8000;
 
 Double_t dNdPhi(Double_t phiPart, Double_t pT, Double_t Psi1 , Double_t Psi2, Double_t Psi3, Double_t Psi4, Double_t v1,Double_t v2,Double_t v3,Double_t v4){
     return (1.0+2.0*(v1*TMath::Cos(phiPart-Psi1) + v2*TMath::Cos(2.0*(phiPart-Psi2)) + v3*TMath::Cos(3.0*(phiPart-Psi3))+ v4*TMath::Cos(4.0*(phiPart-Psi4)) ) );
@@ -378,10 +380,12 @@ Int_t GenerateTennGenAuAu(Int_t nevent, Int_t centbin, Double_t etaRange, Int_t 
         Int_t particle_multiplicity = -1;
         // cout << "Starting multiplicity loop" << endl;
         while (1){
-            particle_multiplicity = Int_t((etaRange/0.5)*multiplicty_distro->GetRandom(Multi_Rand));
+            particle_multiplicity = Int_t(multiplicty_distro->GetRandom(Multi_Rand));
             if(SpectraCentBin(particle_multiplicity) == centbin) break;
         }
         Int_t harmonic_centbin = HarmonicCentBin(particle_multiplicity);
+        particle_multiplicity = Int_t((etaRange/0.5)*particle_multiplicity);
+
 
         Int_t particle_yeilds[6] = {0,0,0,0,0,0};
         particle_yeilds[0] = Int_t(piminusRatios[centbin]*particle_multiplicity);
