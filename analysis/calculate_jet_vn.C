@@ -322,7 +322,11 @@ Int_t main(Int_t argc, Char_t** argv){
         particle_pt_bins_center[ibin-1] = v2_pi_calulated->GetXaxis()->GetBinCenter(ibin);
     }
 
-
+    for(Int_t ibin=0; ibin<10; ibin++){
+        cout << "particle_pt_bins_center[" << ibin << "] = " << particle_pt_bins_center[ibin] << endl;
+    }
+    
+    
     Double_t W_two_particle_pi[10]={0};
     Double_t omega_two_particle_differential_pi[10]={0};
     Double_t second_order_differential_cumulant_pi_v2[10]={0};
