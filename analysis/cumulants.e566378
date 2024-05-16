@@ -1,3 +1,0 @@
-
- *** Break *** segmentation violation
-/var/spool/slurm/spool/job566378/slurm_script: line 17: 3310524 Segmentation fault      (core dumped) ./calculate_jet_vn /lustre/isaac/scratch/tmengel/jet-vn-cumulant/simulation/root-files/MixedEvents/20-40/200GeV_AlignedMixedEvents_20to40cent_R04.root 0.4 testoutput.root
