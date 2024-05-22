@@ -22,7 +22,7 @@ std::map<std::string,std::pair<float,float>> pTbin_map =
 std::map<std::string,std::vector<std::string>> jet_vn_map =
 {
     // {"vn_0", {"0.04", "0.01", "0.005"}},
-    {"2vn_0", {"0.08", "0.02", "0.01"}},
+    // {"2vn_0", {"0.08", "0.02", "0.01"}},
     // {"5vn_0", {"0.2", "0.05", "0.025"}},
     // {"linear", {"0.04 + 0.001 * x", "0.01 + 0.001 * x", "0.005 + 0.001 * x"}},
     // {"logarithmic", {"0.04 + 0.02*TMath::Log(x)", "0.01 + 0.02*TMath::Log(x)", "0.005 + 0.02*TMath::Log(x)"}},
