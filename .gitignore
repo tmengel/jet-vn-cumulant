@@ -20,6 +20,12 @@ HyperTuning/output
 *.o
 *.obj
 
+# executable files
+*.exe
+*.out
+*.app
+
+
 # Precompiled Headers
 *.gch
 *.pch
