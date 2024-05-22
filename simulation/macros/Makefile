@@ -21,7 +21,7 @@ CXX_PYTHIA8 = $(shell pythia8-config --cxxflags --libs)
 
 CXX_COMMON:= $(CXX_COMMON) $(GZIP_LIB)
 CXX_COMMON+= $(CXX_ROOT) $(CXX_PYTHIA8) $(CXX_FASTJET3)
-LIB_TOYMODEL = /lustre/isaac/scratch/tmengel/jet-vn-cumulant/simulation/src 
+LIB_TOYMODEL=/lustre/isaac/scratch/tmengel/JetVnCumulantMethod/jet-vn-cumulant/simulation/src 
 CXX_COMMON += -I$(LIB_TOYMODEL) -L$(LIB_TOYMODEL) -Wl,-rpath,$(LIB_TOYMODEL) -lToyModel
 ################################################################################
 
