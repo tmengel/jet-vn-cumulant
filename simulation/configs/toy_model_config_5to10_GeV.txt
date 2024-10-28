@@ -1,0 +1,49 @@
+################## Main ToyModelSettings ##################
+Main::NumEvents                         == 10000                                   
+Main::RandomSeed                        == 0                                       # 0 means use time seed                 
+Main::Verbosity                         == 1                                       # 0 = quiet, 1 = normal, 2 = verbose    
+
+Main::Particle::MinPt                   == 0.5                                     # Minimum pT for all particles unless specified in Bkgd or Signal
+Main::Particle::MaxEta                  == 1.1                                     # Maximum eta for all particles unless specified in Bkgd or Signal
+
+Main::Jet::MinPt                        == 5                                       # Minimum pT for all jets unless specified in Signal
+Main::Jet::MaxEta                       == -1                                      # Maximum eta for all jets unless specified in Signal (-1.0 means default to Particle::MaxEta - Jet::R)
+Main::Jet::MinArea                      == 0.6                                     # Minimum area for merged jet (0.0 means no cut)
+Main::Jet::R                            == 0.4                                     
+
+############### Background ToyModelSettings ###############
+Bkgd::Multiplicity                      == 363                                     
+
+
+Bkgd::ConstEventPlane1                  == -1                                      # Constant event plane angle for v1     
+Bkgd::ConstEventPlane2                  == 0                                       # Constant event plane angle for v2     
+Bkgd::ConstEventPlane3                  == -1                                      # Constant event plane angle for v3     
+Bkgd::ConstEventPlane4                  == 0                                       # Constant event plane angle for v4     
+
+################# Signal ToyModelSettings #################
+Signal::NumJets                         == 1                                       # Number of jets to passed back to merging
+
+Signal::Jet::MinPt                      == 5                                       # Minimum pT for Pythia jet (optional defaults to Main::Jet::MinPt)
+
+Signal::Jet::Rotate                     == false                                   # Rotate jet to event plane             
+Signal::Jet::v2Function                 == 0.04                                    # v2 coefficient function form (pt is x)
+Signal::Jet::v3Function                 == 0.01                                    # v3 coefficient function form (pt is x)
+Signal::Jet::v4Function                 == 0.005                                   # v4 coefficient function form (pt is x)
+
+Signal::Pythia::PythiaConfig            ==                                         # Pythia configuration file (optional)  
+######################################## Pythia commands are strings passed to Pythia8::Pythia::readString() 
+Signal::Pythia::PythiaCommand           == Beams:idA = 2212                        
+Signal::Pythia::PythiaCommand           == Beams:idB = 2212                        
+Signal::Pythia::PythiaCommand           == Beams:eCM = 200.0                       
+Signal::Pythia::PythiaCommand           == PDF:pSet = 13                           
+Signal::Pythia::PythiaCommand           == HardQCD:all = on                        
+Signal::Pythia::PythiaCommand           == Init:showProcesses = off                
+Signal::Pythia::PythiaCommand           == Init:showMultipartonInteractions = off  
+Signal::Pythia::PythiaCommand           == Init:showChangedSettings = on           
+Signal::Pythia::PythiaCommand           == Next:numberCount = 1000000000           
+Signal::Pythia::PythiaCommand           == Next:numberShowInfo = 0                 
+Signal::Pythia::PythiaCommand           == Next:numberShowProcess = 0              
+Signal::Pythia::PythiaCommand           == Next:numberShowEvent = 0                
+Signal::Pythia::PtHardMin               == 5                                       # Minimum pT hard bin (optional)        
+Signal::Pythia::PtHardMax               == 10                                      # Maximum pT hard bin (optional)        
+
