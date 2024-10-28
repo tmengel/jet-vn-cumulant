@@ -101,6 +101,7 @@ int CorrCalculator::CalculateHarm(int harmonic)
     
 
         int event_id = 0;
+        double weight = 1.0;
         int n_forward_particles = 0;
         double Qn_i = 0.0;
         double Qn_r = 0.0;
@@ -126,6 +127,7 @@ int CorrCalculator::CalculateHarm(int harmonic)
 
         // set up input branches
         event_tree->SetBranchAddress("event_id", &event_id);
+        event_tree->SetBranchAddress("weight", &weight);
         event_tree->SetBranchAddress("n_forward_particles", &n_forward_particles);
         event_tree->SetBranchAddress(Form("Q%d_i", harmonic), &Qn_i);
         event_tree->SetBranchAddress(Form("Q%d_r", harmonic), &Qn_r);
@@ -156,6 +158,7 @@ int CorrCalculator::CalculateHarm(int harmonic)
         std::vector<double> two_part_diff_unmatched;
         std::vector<double> four_part_diff_unmatched;
         event_tree_corr->Branch("event_id", &event_id, "event_id/I");
+        event_tree_corr->Branch("weight", &weight, "weight/D");
         event_tree_corr->Branch("jet_v2_truth", &jet_v2_truth, "jet_v2_truth/D");
         event_tree_corr->Branch("jet_v3_truth", &jet_v3_truth, "jet_v3_truth/D");
         event_tree_corr->Branch("jet_v4_truth", &jet_v4_truth, "jet_v4_truth/D");
@@ -251,10 +254,10 @@ int CorrCalculator::CalculateHarm(int harmonic)
                 double w_four = CorrFunctions::FourPartDiffWeight(n_forward_particles, 1, 0);
                 double two_diff = CorrFunctions::TwoPartDiff(Qn, pn, 1, n_forward_particles);
                 double four_diff = CorrFunctions::FourPartDiff(Qn, Q2n, pn, 1, n_forward_particles);
-                two_part_diff_truth = two_diff*w_two;
-                four_part_diff_truth = four_diff*w_four;
-                // two_part_diff_truth= two_diff;
-                // four_part_diff_truth = four_diff;
+                // two_part_diff_truth = two_diff*w_two;
+                // four_part_diff_truth = four_diff*w_four;
+                two_part_diff_truth= two_diff;
+                four_part_diff_truth = four_diff;
 
                 if(two_part_diff_truth < two_truth_minmax.first) two_truth_minmax.first = two_part_diff_truth;
                 if(two_part_diff_truth > two_truth_minmax.second) two_truth_minmax.second = two_part_diff_truth;
@@ -276,10 +279,10 @@ int CorrCalculator::CalculateHarm(int harmonic)
                 double w_four = CorrFunctions::FourPartDiffWeight(n_forward_particles, 1, 0);
                 double two_diff = CorrFunctions::TwoPartDiff(Qn, pn, 1, n_forward_particles);
                 double four_diff = CorrFunctions::FourPartDiff(Qn, Q2n, pn, 1, n_forward_particles);
-                two_part_diff_reco = two_diff*w_two;
-                four_part_diff_reco = four_diff*w_four;
-                // two_part_diff_reco = two_diff;
-                // four_part_diff_reco = four_diff;
+                // two_part_diff_reco = two_diff*w_two;
+                // four_part_diff_reco = four_diff*w_four;
+                two_part_diff_reco = two_diff;
+                four_part_diff_reco = four_diff;
 
 
                 if(two_part_diff_reco < two_reco_minmax.first) two_reco_minmax.first = two_part_diff_reco;
@@ -305,10 +308,10 @@ int CorrCalculator::CalculateHarm(int harmonic)
                 double two_part_diff = CorrFunctions::TwoPartDiff(Qn, pn, 1, n_forward_particles);
                 double four_part_diff = CorrFunctions::FourPartDiff(Qn, Q2n, pn, 1, n_forward_particles);
 
-                two_part_diff_unmatched.push_back(two_part_diff*w_two);
-                four_part_diff_unmatched.push_back(four_part_diff*w_four);
-                // two_part_diff_unmatched.push_back(two_part_diff);
-                // four_part_diff_unmatched.push_back(four_part_diff);
+                // two_part_diff_unmatched.push_back(two_part_diff*w_two);
+                // four_part_diff_unmatched.push_back(four_part_diff*w_four);
+                two_part_diff_unmatched.push_back(two_part_diff);
+                four_part_diff_unmatched.push_back(four_part_diff);
 
                 if(two_part_diff_unmatched.back() < two_unmatched_minmax.first) two_unmatched_minmax.first = two_part_diff_unmatched.back();
                 if(two_part_diff_unmatched.back() > two_unmatched_minmax.second) two_unmatched_minmax.second = two_part_diff_unmatched.back();
@@ -334,17 +337,25 @@ int CorrCalculator::CalculateHarm(int harmonic)
 
         // bin tree for unfolding
         TTree * bin_tree = new TTree("bin_tree", "bin_tree");
-        std::vector<double> jet_v2_truth_bins = GetBinning(jet_v2_truth_minmax, 15);
-        std::vector<double> jet_v3_truth_bins = GetBinning(jet_v3_truth_minmax, 15);
-        std::vector<double> jet_v4_truth_bins = GetBinning(jet_v4_truth_minmax, 15);
-        std::vector<double> two_diff_truth_bins = GetBinning(two_truth_minmax, 100);
-        std::vector<double> four_diff_truth_bins = GetBinning(four_truth_minmax, 100);
-        std::vector<double> two_diff_reco_bins = GetBinning(two_reco_minmax, 100);
-        std::vector<double> four_diff_reco_bins = GetBinning(four_reco_minmax, 100);
+        jet_v2_truth_minmax.first*=0.5;
+        jet_v2_truth_minmax.second*=1.5;
+        jet_v3_truth_minmax.first*=0.5;
+        jet_v3_truth_minmax.second*=1.5;
+        jet_v4_truth_minmax.first*=0.5;
+        jet_v4_truth_minmax.second*=1.5;
+        
+
+         std::vector<double> jet_v2_truth_bins = GetBinning(jet_v2_truth_minmax, 20);
+        std::vector<double> jet_v3_truth_bins = GetBinning(jet_v3_truth_minmax, 20);
+        std::vector<double> jet_v4_truth_bins = GetBinning(jet_v4_truth_minmax, 20);
+        std::vector<double> two_diff_truth_bins = GetCorrBinning(two_truth_minmax, 100);
+        std::vector<double> four_diff_truth_bins = GetCorrBinning(four_truth_minmax, 100);
+        std::vector<double> two_diff_reco_bins = GetCorrBinning(two_reco_minmax, 100);
+        std::vector<double> four_diff_reco_bins = GetCorrBinning(four_reco_minmax, 100);
         std::vector<double> two_diff_unmatched_bins = GetBinning(two_unmatched_minmax, 100);
         std::vector<double> four_diff_unmatched_bins = GetBinning(four_unmatched_minmax, 100);
-        std::vector<double> two_diff_bins = GetBinning(two_minmax, 100);
-        std::vector<double> four_diff_bins = GetBinning(four_minmax, 100);
+        std::vector<double> two_diff_bins = GetCorrBinning(two_minmax, 150);
+        std::vector<double> four_diff_bins = GetCorrBinning(four_minmax, 250);
     
         bin_tree->Branch("pt_bins", &m_pt_bins);
         bin_tree->Branch("jet_v2_truth_bins", &jet_v2_truth_bins);
@@ -373,11 +384,37 @@ int CorrCalculator::CalculateHarm(int harmonic)
     return 0;
 }
 
+
 std::vector<double> CorrCalculator::GetBinning(std::pair<double,double> minmax, const int n_bins)
 {
     std::vector<double> bins;
-    const double delta = (1.05*minmax.second - 1.05*minmax.first)/n_bins;
+    const double delta = (1.05*minmax.second - 0.95*minmax.first)/n_bins;
     for (int i = 0; i < n_bins+1; i++){  bins.push_back(minmax.first + i*delta); }
+    return bins;
+}
+
+// std::vector<double> CorrCalculator::GetCorrBinning(std::pair<double,double> minmax, const int n_bins)
+// {
+//     double max_abs = std::max(std::abs(minmax.first), std::abs(minmax.second));
+//     max_abs*=0.8;
+//     // // make sure the binning is symmetric around 0
+//     double delta = 2.0*max_abs/n_bins;
+//     std::vector<double> bins;
+//     for (int i = 0; i < n_bins+1; i++){  bins.push_back(-max_abs + i*delta); }
+//     // return bins;
+//     // std::vector<double> bins;
+//     // const double delta = (minmax.second - minmax.first)/n_bins;
+//     // for (int i = 0; i < n_bins+1; i++){  bins.push_back(minmax.first + i*delta); }
+//     return bins;
+// }
+std::vector<double> CorrCalculator::GetCorrBinning(std::pair<double,double> minmax, const int n_bins)
+{
+    double max_abs = std::max(std::abs(minmax.first), std::abs(minmax.second));
+    max_abs*=0.5;
+    // make sure the binning is symmetric around 0
+    double delta = 2.0*max_abs/n_bins;
+    std::vector<double> bins;
+    for (int i = 0; i < n_bins+1; i++){  bins.push_back(-max_abs + i*delta); }
     return bins;
 }
 

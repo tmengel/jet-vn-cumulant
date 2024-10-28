@@ -43,6 +43,7 @@ class CorrCalculator
         int Calculate();
         int CalculateHarm(int harmonic);
         static std::vector<double> GetBinning(std::pair<double,double> minmax, const int n_bins);
+        static std::vector<double> GetCorrBinning(std::pair<double,double> minmax, const int n_bins);
 };
 
 

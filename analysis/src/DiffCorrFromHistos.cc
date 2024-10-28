@@ -1,8 +1,6 @@
-#ifndef DIFFCORRUNFOLDER_H
-#define DIFFCORRUNFOLDER_H
-
 #include "CorrFunctions.h"
-// #include "Utils.h"
+#include "Utils.h"
+#include "DiffCorrFromHistos.h"
 
 #include <iostream>
 #include <string>
@@ -18,101 +16,12 @@
 #include <TProfile.h>
 #include <TH1D.h>
 #include <TH2D.h>
-#include <TComplex.h>
 
-#include <RooUnfoldResponse.h>
-#include <RooUnfoldBayes.h>
-#include <RooUnfoldErrors.h>
 
-class DiffCorrUnfolder
+int DiffCorrFromHistos::Calculate()
 {
-    public:
-
-        DiffCorrUnfolder(const std::string &input_dir) 
-            : m_input(input_dir)
-        {
-        }
-        ~DiffCorrUnfolder() {}
-
-        void OutputDir(const std::string &name) { m_output_dir = name; }
-        std::string OutputDir() { return m_output_dir; }
-
-        int Run() { return Calculate(); }
-        
-        void MaxIter(int max_iter) { m_max_iter = max_iter; }
-        int MaxIter() { return m_max_iter; }
-
-        void MinIter(int min_iter) { m_min_iter = min_iter; }
-        int MinIter() { return m_min_iter; }
-
-
-        void SetInputFiles(const std::vector<std::string> &input_files) { m_input_files = input_files; }
-
-    private:
-
-        std::string m_input{""};
-        std::vector<std::string> m_input_files{};
-        std::string m_output_dir {""};
-        
-
-        int m_max_iter{6};
-        int m_min_iter{3};
-
-
-        int Calculate();
-        
-        std::string GetOutputFileName(std::string inputfile);
-        static TH1D * Make1D(TH2D * h2, std::string name, double w=1.0);
-        static std::vector<double> ConvertToVec(TH2D * h2, double w=1.0);
-
-        static std::vector<std::string> GetFilesFromDir(const std::string &dir)
-        {
-            std::vector<std::string> input_files{};
-
-            if(gSystem->AccessPathName(dir.c_str()))
-            {
-                std::cerr << "Error: directory " << dir << " does not exist" << std::endl;
-                exit(1);
-            }
-
-            bool has_trailing_slash = dir.back() == '/';
-            std::string ls_dir = dir;
-            if(!has_trailing_slash) ls_dir += "/";
-
-            std::string cmd = "ls " + ls_dir+ "*.root";
-            FILE *fp = popen(cmd.c_str(), "r");
-            if(!fp)
-            {
-                std::cerr << "Cannot open directory " << dir << std::endl;
-                exit(1);
-            }
-
-            // read the output of the command
-            char path[1024];
-            while(fgets(path, sizeof(path), fp) != NULL)
-            {
-                std::string file_path = path;
-                file_path.erase(std::remove(file_path.begin(), file_path.end(), '\n'), file_path.end());
-                input_files.push_back(file_path);
-            }
-
-            pclose(fp);
-
-            if(input_files.size() == 0)
-            {
-                std::cerr << "No files found in directory " << dir << std::endl;
-                exit(1);
-            }
-
-            return input_files;
-        }
-
-
-};
-
-int DiffCorrUnfolder::Calculate()
-{
-
+    
+    std::cout << "Calculating differential correlations from histograms" << std::endl;
     // make output directory
     if (m_output_dir.empty())
     {
@@ -137,7 +46,7 @@ int DiffCorrUnfolder::Calculate()
     else
     {
         std::cout << "Input is a directory" << std::endl;
-        m_input_files = GetFilesFromDir(m_input);
+        m_input_files = Utils::GetFilesFromDir(m_input);
     }
     std::cout << "Found " << m_input_files.size() << " input files" << std::endl;
 
@@ -229,6 +138,11 @@ int DiffCorrUnfolder::Calculate()
         std::vector<double> jet_v2_truth_bins = *in_jet_v2_truth_bins;
         std::vector<double> jet_v3_truth_bins = *in_jet_v3_truth_bins;
         std::vector<double> jet_v4_truth_bins = *in_jet_v4_truth_bins;
+        std::cout << "jet_v2_truth_bins: " << std::endl;
+        // for (auto &bin : jet_v2_truth_bins)
+        // {
+        //     std::cout << "bin: " << bin << std::endl;
+        // }
         std::vector<double> pt_bins = *in_pt_bins;
         std::vector<double> two_part_diff_bins = *in_two_part_diff_bins;
         std::vector<double> four_part_diff_bins = *in_four_part_diff_bins;
@@ -304,15 +218,7 @@ int DiffCorrUnfolder::Calculate()
         TH2D * h2_jet_v3_truth = new TH2D("h2_jet_v3_truth", "h2_jet_v3_truth", pt_bins.size()-1, pt_bins.data(), jet_v3_truth_bins.size()-1, jet_v3_truth_bins.data());
         TH2D * h2_jet_v4_truth = new TH2D("h2_jet_v4_truth", "h2_jet_v4_truth", pt_bins.size()-1, pt_bins.data(), jet_v4_truth_bins.size()-1, jet_v4_truth_bins.data());
         
-        const int n_iterations = m_max_iter - m_min_iter + 1;
-        TH2D * h2_unfolded_two_part_unfolded[n_iterations];
-        TH2D * h2_unfolded_four_part_unfolded[n_iterations];
-
-        RooUnfold::ErrorTreatment errorTreatment = RooUnfold::kCovariance;
-        RooUnfoldResponse *response_two_part = new RooUnfoldResponse("response_two_part", "");
-        RooUnfoldResponse *response_four_part = new RooUnfoldResponse("response_four_part", "");
-        response_two_part->Setup(h2_two_part_diff_measured, h2_two_part_diff_truth);
-        response_four_part->Setup(h2_four_part_diff_measured, h2_four_part_diff_truth);
+       
 
         int n_entries = event_tree->GetEntries();
         int n_entries_for_response = int(n_entries/3);
@@ -342,14 +248,7 @@ int DiffCorrUnfolder::Calculate()
                 // h1_jet_pt_reco_matched->Fill(jet_pt_reco, weight);
                 h1_jet_pt_measured->Fill(jet_pt_reco, weight);
 
-                if(i < n_entries_for_response)
-                {
-                    // sample theorectical values
-                    
-                    response_two_part->Fill(jet_pt_reco, two_part_diff_reco, jet_pt_truth, two_part_diff_truth, w_2);
-                    response_four_part->Fill(jet_pt_reco, four_part_diff_reco, jet_pt_truth, four_part_diff_truth, w_4);
-                }
-                else 
+                if(i > n_entries_for_response)
                 {
                     // h2_two_part_diff_truth->Fill(jet_pt_truth, two_part_diff_truth, weight);
                     // h2_four_part_diff_truth->Fill(jet_pt_truth, four_part_diff_truth, weight);
@@ -364,54 +263,23 @@ int DiffCorrUnfolder::Calculate()
                 }
 
             }
-            
            
-    
-        
         
         }
 
         w_2 = 1.0;
         w_4 = 1.0;
 
-        // unfold the measured cumulants
-        for (int i = 0; i < n_iterations; i++)
-        {
-            //clear vectors
-            two_part_diff_unfolded_vec.clear();
-            four_part_diff_unfolded_vec.clear();
-
-
-            RooUnfoldBayes unfold_two_part(response_two_part, h2_two_part_diff_measured, i+m_min_iter);
-            RooUnfoldBayes unfold_four_part(response_four_part, h2_four_part_diff_measured, i+m_min_iter);
-
-
-            TH2D * h2_unfolded_two_part_tmp = (TH2D*)unfold_two_part.Hunfold(errorTreatment);
-            TH2D * h2_unfolded_four_part_tmp = (TH2D*)unfold_four_part.Hunfold(errorTreatment);
-
-            // convert to vectors
-            two_part_diff_unfolded_vec = ConvertToVec(h2_unfolded_two_part_tmp, 1.0/w_2);
-            four_part_diff_unfolded_vec = ConvertToVec(h2_unfolded_four_part_tmp, 1.0/w_4);
-            iterunfolded = i+m_min_iter;
-            event_tree_unfolded->Fill();
-
-            h2_unfolded_two_part_unfolded[i] = (TH2D*)h2_unfolded_two_part_tmp->Clone(Form("h2_unfolded_two_part_unfolded_%d", i+m_min_iter));
-            h2_unfolded_four_part_unfolded[i] = (TH2D*)h2_unfolded_four_part_tmp->Clone(Form("h2_unfolded_four_part_unfolded_%d", i+m_min_iter));
-            
-
-            TH1D * h1_unfolded_two_part_tmp = Make1D(h2_unfolded_two_part_tmp, Form("h1_unfolded_two_part_%d", i+m_min_iter), 1.0/w_2);
-            TH1D * h1_unfolded_four_part_tmp = Make1D(h2_unfolded_four_part_tmp, Form("h1_unfolded_four_part_%d", i+m_min_iter), 1.0/w_4);
-
-            fout->cd();
-            h1_unfolded_two_part_tmp->Write();
-            h1_unfolded_four_part_tmp->Write(); 
-        }
-
+ 
         // write the histograms
         fout->cd();
         h1_jet_pt_truth_all->Write();
         // h1_jet_pt_reco_matched->Write();
+        h1_jet_pt_fake->Write();
         h1_jet_pt_measured->Write();
+        h2_jet_v2_truth->Write();
+        h2_jet_v3_truth->Write();
+        h2_jet_v4_truth->Write();
 
         TH1D * h1_jet_v2_truth = Make1D(h2_jet_v2_truth, "h1_jet_v2_truth");
         TH1D * h1_jet_v3_truth = Make1D(h2_jet_v3_truth, "h1_jet_v3_truth");
@@ -421,8 +289,6 @@ int DiffCorrUnfolder::Calculate()
         TH1D * h1_two_part_diff_measured = Make1D(h2_two_part_diff_measured, "h1_two_part_diff_measured", 1.0/w_2);
         // TH1D * h1_two_part_diff_reco_matched = Make1D(h2_two_part_diff_reco_matched, "h1_two_part_diff_reco_matched", 1.0/w_2);
         TH1D * h1_two_part_diff_fake = Make1D(h2_two_part_diff_fake, "h1_two_part_diff_fake", 1.0/w_2);
-
-       
 
         TH1D * h1_four_part_diff_truth = Make1D(h2_four_part_diff_truth, "h1_four_part_diff_truth", 1.0/w_4);
         TH1D * h1_four_part_diff_measured = Make1D(h2_four_part_diff_measured, "h1_four_part_diff_measured", 1.0/w_4);
@@ -472,8 +338,7 @@ int DiffCorrUnfolder::Calculate()
 }
 
 
-
-std::vector<double> DiffCorrUnfolder::ConvertToVec(TH2D * h2,  double w)
+std::vector<double> DiffCorrFromHistos::ConvertToVec(TH2D * h2,  double w)
 {
  
     TProfile * p = h2->ProfileX();
@@ -490,7 +355,7 @@ std::vector<double> DiffCorrUnfolder::ConvertToVec(TH2D * h2,  double w)
     return vec;
 }
 
-TH1D * DiffCorrUnfolder::Make1D(TH2D * h2, std::string name, double w)
+TH1D * DiffCorrFromHistos::Make1D(TH2D * h2, std::string name, double w)
 {
     TProfile * p = h2->ProfileX();
     TH1D * h1 = (TH1D*)p->ProjectionX(name.c_str());
@@ -501,17 +366,14 @@ TH1D * DiffCorrUnfolder::Make1D(TH2D * h2, std::string name, double w)
     return h1;
 }
 
-std::string DiffCorrUnfolder::GetOutputFileName(std::string inputfile)
+std::string DiffCorrFromHistos::GetOutputFileName(std::string inputfile)
 {
     // subtract the multiplicity
     TString inputfile_base = inputfile.c_str();
     inputfile_base.ReplaceAll(".root", "");
     // remove the path (everything before the last /)
     inputfile_base = inputfile_base(inputfile_base.Last('/')+1, inputfile_base.Length()-inputfile_base.Last('/')+1);
-    TString outputfile = Form("%s/%s_unfolded.root", m_output_dir.c_str(), inputfile_base.Data());
+    TString outputfile = Form("%s/%s_fromhist.root", m_output_dir.c_str(), inputfile_base.Data());
     return outputfile.Data();
 }
 
-
-
-#endif // DIFFCORRUNFOLDER_H

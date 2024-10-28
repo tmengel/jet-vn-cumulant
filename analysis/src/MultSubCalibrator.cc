@@ -108,6 +108,10 @@ int MultSubCalibrator::Calibrate(bool overwrite)
         // input variables
         double jet_pt_reco = 0.0;
         int jet_nconst_truth = 0;
+        double weight = 1.0;
+
+        // set up input branches
+        event_tree->SetBranchAddress("weight", &weight);
 
         // set up input branches
         event_tree->SetBranchAddress("jet_pt_reco", &jet_pt_reco);
@@ -118,8 +122,8 @@ int MultSubCalibrator::Calibrate(bool overwrite)
         for (int i = 0; i < n_entries; i++)
         {
             event_tree->GetEntry(i);
-            h2_nconst_truth_vs_reco_pt->Fill(jet_pt_reco, jet_nconst_truth);
-            h1_jet_pt_reco->Fill(jet_pt_reco);
+            h2_nconst_truth_vs_reco_pt->Fill(jet_pt_reco, jet_nconst_truth, weight);
+            h1_jet_pt_reco->Fill(jet_pt_reco, weight);
         }
 
         fin->Close();

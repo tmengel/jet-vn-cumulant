@@ -49,9 +49,11 @@ int FlowCalculator::Calculate()
     
 
     m_h1_jet_v2_func = (TH1D*)f_calib->Get("jet_v2_func_hist")->Clone("h1_jet_v2_func");
+    m_h1_jet_v2_func->Scale(1.0/100.0);
     m_h1_jet_v3_func = (TH1D*)f_calib->Get("jet_v3_func_hist")->Clone("h1_jet_v3_func");
+    m_h1_jet_v3_func->Scale(1.0/100.0);
     m_h1_jet_v4_func = (TH1D*)f_calib->Get("jet_v4_func_hist")->Clone("h1_jet_v4_func");
-
+    m_h1_jet_v4_func->Scale(1.0/100.0);
     // f_calib->Close();
 
     std::cout << "Read calib file " << m_calib_file_name << std::endl;
@@ -131,21 +133,21 @@ int FlowCalculator::Calculate()
         h_vn4_truth->Write();
     }
 
-    for (auto &input_file : m_input_files_harmonics)
-    {
-        std::string input_dir = input_file.first;
-        int harmonic = input_file.second;
-        m_input_files.clear();
-        m_input_files = Utils::GetFilesFromDir(input_dir);
-        std::cout << "Number of input files in directory " << input_dir << " is " << m_input_files.size() << std::endl;
+    // for (auto &input_file : m_input_files_harmonics)
+    // {
+    //     std::string input_dir = input_file.first;
+    //     int harmonic = input_file.second;
+    //     m_input_files.clear();
+    //     m_input_files = Utils::GetFilesFromDir(input_dir);
+    //     std::cout << "Number of input files in directory " << input_dir << " is " << m_input_files.size() << std::endl;
 
-        MakeTruthHists(harmonic, m_input_files);
-    }
+    //     MakeTruthHists(harmonic, m_input_files);
+    // }
 
     fout->cd();
-    m_h1_jet_v2_truth->Write();
-    m_h1_jet_v3_truth->Write();
-    m_h1_jet_v4_truth->Write();
+    // m_h1_jet_v2_truth->Write();
+    // m_h1_jet_v3_truth->Write();
+    // m_h1_jet_v4_truth->Write();
     
 
     fout->Close();
@@ -410,45 +412,45 @@ std::pair<TH1D*, TH1D*> FlowCalculator::GetVnHists(const int harmonic, const std
         std::vector<double> vn_two = vn2Vec(dn_two, cn_two_ref);
         std::vector<double> vn_four = vn4Vec(dn_four, cn_four_ref);
 
-        std::cout << "two_part_vec: ";
-        for (auto &v : two_part_vec)
-        {
-            std::cout << v << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "four_part_vec: ";
-        for (auto &v : four_part_vec)
-        {
-            std::cout << v << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "dn_two: ";
-        for (auto &v : dn_two)
-        {
-            std::cout << v << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "dn_four: ";
-        for (auto &v : dn_four)
-        {
-            std::cout << v << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "vn_two: ";
-        for (auto &v : vn_two)
-        {
-            std::cout << v << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "vn_four: ";
-        for (auto &v : vn_four)
-        {
-            std::cout << v << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "cn_two_ref = " << cn_two_ref << std::endl;
-        std::cout << "cn_four_ref = " << cn_four_ref << std::endl;
-        std::cout << std::endl;
+        // std::cout << "two_part_vec: ";
+        // for (auto &v : two_part_vec)
+        // {
+        //     std::cout << v << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "four_part_vec: ";
+        // for (auto &v : four_part_vec)
+        // {
+        //     std::cout << v << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "dn_two: ";
+        // for (auto &v : dn_two)
+        // {
+        //     std::cout << v << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "dn_four: ";
+        // for (auto &v : dn_four)
+        // {
+        //     std::cout << v << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "vn_two: ";
+        // for (auto &v : vn_two)
+        // {
+        //     std::cout << v << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "vn_four: ";
+        // for (auto &v : vn_four)
+        // {
+        //     std::cout << v << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "cn_two_ref = " << cn_two_ref << std::endl;
+        // std::cout << "cn_four_ref = " << cn_four_ref << std::endl;
+        // std::cout << std::endl;
 
 
         vn_two_values.push_back(vn_two);
@@ -482,8 +484,8 @@ std::pair<TH1D*, TH1D*> FlowCalculator::GetVnHists(const int harmonic, const std
         vn4_err.push_back(vn_four_mean_err.second);
     }
 
-    TH1D * h_vn2 = GetHistFromVec(vn2, vn2_err, "h1_v" + std::to_string(harmonic) + "_two_diff_"+name, ptbins);
-    TH1D * h_vn4 = GetHistFromVec(vn4, vn4_err, "h1_v" + std::to_string(harmonic) + "_four_diff_"+name, ptbins);
+    TH1D * h_vn2 = GetHistFromVec(vn2, vn2_err, "h1_v" + std::to_string(harmonic) + "_two_diff_"+name+std::to_string(entry), ptbins);
+    TH1D * h_vn4 = GetHistFromVec(vn4, vn4_err, "h1_v" + std::to_string(harmonic) + "_four_diff_"+name+std::to_string(entry), ptbins);
 
     return std::make_pair(h_vn2, h_vn4);
 }

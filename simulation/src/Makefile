@@ -25,9 +25,12 @@ CXX_COMMON:= $(CXX_COMMON) $(GZIP_LIB)
 CXX_COMMON+= $(CXX_ROOT) $(CXX_PYTHIA8) $(CXX_FASTJET3)
 
 # Source files
-SRCS := Settings.cc \
-		BkgdFunctions.cc \
-		ToyModel.cc 
+SRCS := BkgdFunctions.cc \
+		BkgdGen.cc \
+		PythiaGen.cc \
+		Settings.cc \
+		ToyModel.cc \
+		ToyModelMerger.cc \
 
 # Object files
 OBJS := $(SRCS:.cc=.o)

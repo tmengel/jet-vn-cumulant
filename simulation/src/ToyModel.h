@@ -20,8 +20,8 @@ namespace toymodel
 
         private:
 
-            std::string m_config_filename = "config.txt";
-            std::string m_output_filename = "output.txt";
+            std::string m_config_filename{""};
+            std::string m_output_filename{""};
 
             static bool accept_pythia_event(std::vector<fastjet::PseudoJet> &jets, double pTmin, double pTmax);
     };
