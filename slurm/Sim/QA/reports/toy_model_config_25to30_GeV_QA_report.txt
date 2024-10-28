@@ -1,0 +1,61 @@
+=====================================================
+Config File: /lustre/isaac/scratch/tmengel/JetVnCumulantMethod/configs/toy_model_config_25to30_GeV.txt
+Number of jobs: 100
+Number of events per job: 10000
+Output path: /lustre/isaac/scratch/tmengel/JetVnCumulantMethod/rootfiles/sim/toy_model_config_25to30_GeV
+=====================================================
+None empty error files (0):
+=====================================================
+Bad root files (0):
+=====================================================
+random_seed
+match in random_seed for jobs: []
+Files with match: 
+
+
+jet_min_pt
+Mismatch in jet_min_pt for jobs: ['25' '25.0' '5' '5.0']
+Files with mismatch: 
+
+
+jet_max_eta
+Mismatch in jet_max_eta for jobs: ['-1.0' '0.7']
+Files with mismatch: 
+
+
+event_plane1
+Mismatch in event_plane1 for jobs: ['-1' '-1.0']
+Files with mismatch: 
+
+
+event_plane2
+Mismatch in event_plane2 for jobs: ['0' '0.0']
+Files with mismatch: 
+
+
+event_plane3
+Mismatch in event_plane3 for jobs: ['-1' '-1.0']
+Files with mismatch: 
+
+
+event_plane4
+Mismatch in event_plane4 for jobs: ['0' '0.0']
+Files with mismatch: 
+
+
+pthard_min
+Mismatch in pthard_min for jobs: ['25' '25.0']
+Files with mismatch: 
+
+
+pthard_max
+Mismatch in pthard_max for jobs: ['30' '30.0']
+Files with mismatch: 
+
+
+elapsed_time
+Average elapsed_time: 5254.984536082474
+Std Dev elapsed_time: 107.9093828891002
+
+
+=====================================================
